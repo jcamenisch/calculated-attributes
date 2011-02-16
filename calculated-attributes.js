@@ -144,9 +144,6 @@
         }
         if ('inputSelector' in settings) {
           $(this).data('settings', settings);
-          if ('state' in settings && settings.state.args.length === 0) {
-            debugger;
-          }
           calculations.subscribe($(this),$(this).data('settings').inputSelector);
         }
       })
