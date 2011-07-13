@@ -1,5 +1,6 @@
 /* 
   TODO:
+  * Refactor into more logical objects.
   * Consider integrating ideas from http://www.pengoworks.com/workshop/jquery/calculation/calculation.plugin.htm
   * Improve pub sub model to reduce unnecessary repetition of calculations.
 */
@@ -9,7 +10,7 @@
      providing myself some syntax sugar. */
   /* TODO: Consider replacing this with dependency on field plugin */
   $.fn.effectiveValue = function() {
-    return this.is(':checked,:text') ?
+    return this.is(':checked,:text,select') ?
       this.val() :
       0;
   };
@@ -110,7 +111,7 @@
   }
 
   $.fn.CalculatedAttributes = function(){
-    this.find('input').each(function(){
+    this.find('input,select').each(function(){
       $(this).change(function(){
         if (typeof $(this).data('subscribers') === 'object') {
           $(this).data('subscribers').each(function(){
@@ -133,7 +134,10 @@
                 settings.aggregation = words.shift();
               }
               var inputClass = words.join('-')
-              settings.inputSelector = 'input#'+inputClass+',input.'+inputClass+',.'+inputClass+' input';
+              settings.inputSelector =
+                'input#'+inputClass+',select#'+inputClass+
+                ',input.'+inputClass+',select.'+inputClass+
+                ',.'+inputClass+' input,.'+inputClass+' select';
             } else if (firstWord in calculations.stateSetters) {
               settings.state = {
                 func: calculations.stateSetters[firstWord],
