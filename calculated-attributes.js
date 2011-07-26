@@ -14,6 +14,15 @@
       this.val() :
       0;
   };
+  var input_selector = 'input,textarea,select,button'
+  function disable_inputs(elements){
+    elements.filter(input_selector).add(elements.find(input_selector))
+      .attr('disabled','disabled');
+  }
+  function enable_inputs(elements){
+    elements.filter(input_selector).add(elements.find(input_selector)).filter(':visible')
+      .removeAttr('disabled')
+  }
 
   calculations = {
     subscribe: function(subscribers,inputs) {
@@ -48,7 +57,7 @@
     },
     evaluateIf: function(value, args){
       var isTrue = function (value, args) {
-        return calculations.saysTrue(value);
+        return calculations.truthy(value);
       }
       var conditions = {
         'true': isTrue,
@@ -72,10 +81,13 @@
     },
     stateSetters: {
       visible: function(target, state){
-        if (state)
+        if (state) {
           target.show();
-        else
+          enable_inputs(target);
+        } else {
           target.hide();
+          disable_inputs(target)
+        }
       }
     },
     activeSelector: ':checked,:text',
@@ -97,20 +109,21 @@
         reduce: function(a,b) { return Math.max(a, b) }
       },
       all: {
-        map: function(a,b) { return calculations.saysTrue($(this).effectiveValue()); },
+        map: function(a,b) { return calculations.truthy($(this).effectiveValue()); },
         reduce: function(a,b) { return a && b }
       },
       any: {
-        map: function(a,b) { return calculations.saysTrue($(this).effectiveValue()); },
+        map: function(a,b) { return calculations.truthy($(this).effectiveValue()); },
         reduce: function(a,b) { return a || b }
       }
     },
-    saysTrue: function (something){
+    truthy: function (something){
       return typeof something != 'undefined' && !(something+"").match(/^(0|false|no)?$/i);
     }
   }
 
-  $.fn.CalculatedAttributes = function(){
+  $.fn.CalculatedAttributes = function(options){
+    options = options || {}
     this.find('input,select').each(function(){
       $(this).change(function(){
         if (typeof $(this).data('subscribers') === 'object') {
@@ -123,6 +136,8 @@
     this.find('.subscribe')
       .change(calculations.pullSubscription)
       .each(function(){
+        if (options.afterUpdate)
+          $(this).change(options.afterUpdate)
         var classes = $(this).attr('class').split(' ');
         var settings = {};
         for (i in classes) {
