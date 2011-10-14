@@ -140,7 +140,7 @@
           $(this).change(options.afterUpdate)
         var classes = $(this).attr('class').split(' ');
         var settings = {};
-        for (i in classes) {
+        for (i=0; i < classes.length; i++) {
           if (classes[i] !== 'subscribe') {
             words = classes[i].split('-');
             firstWord = words.shift();
