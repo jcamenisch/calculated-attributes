@@ -4,6 +4,13 @@ Calculated Attributes
 A jQuery plugin for binding DOM elements' attributes to values of form inputs. The bindings
 are configured in page markup using self-explanatory classes.
 
+Caveats
+-------
+
+If I were creating this library today, I probably would have used data attributes instead of classes. Actually, I might have just done the whole thing with something like Knockout.
+
+It works, though, and is still in use in production. Old code never dies, and all that.
+
 Usage
 -----
 
